@@ -1,37 +1,26 @@
 #!/bin/bash
-
 echo "Iniciando configuração do meu ambiente"
-
-mkdir -p ~/.config/nvim
-chmod -R u+w ~/.config/nvim
 
 sudo dnf update -y
 
-sudo dnf install -y neovim
+sudo dnf install -y neovim git wget unzip
+
+mkdir -p ~/.config/nvim/lua/plugins
+chmod -R u+w ~/.config/nvim
 
 git clone https://github.com/LazyVim/starter ~/.config/nvim
 
-echo "Instalando plugins do LazyVim..."
-nvim --headless "+Lazy sync" +qa
-
-echo "Instalando Nerd Font..."
-FONT_DIR="$HOME/.local/share/fonts"
-mkdir -p "$FONT_DIR"
-FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip"
-wget -q "$FONT_URL" -O Hack.zip
-unzip -q Hack.zip -d "$FONT_DIR"
-fc-cache -fv
-rm Hack.zip
-
-echo "Nerd Font instalada com sucesso!"
-
-echo "Adicionando LazyGit e vim-be-good ao LazyVim..."
-cat <<EOF >>~/.config/nvim/lua/config/plugins.lua
+cat <<EOF >~/.config/nvim/lua/plugins/extras.lua
 return {
   -- LazyGit plugin
   {
     "kdheepak/lazygit.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim"
+    },
     config = function()
+      vim.g.lazygit_floating_window_winblend = 0
+      vim.g.lazygit_floating_window_scaling_factor = 0.9
       vim.keymap.set("n", "<leader>gg", ":LazyGit<CR>", { desc = "LazyGit" })
     end,
   },
@@ -45,7 +34,15 @@ return {
 }
 EOF
 
-echo "Sincronizando LazyVim com LazyGit e vim-be-good..."
+FONT_DIR="$HOME/.local/share/fonts"
+mkdir -p "$FONT_DIR"
+FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip"
+wget -q "$FONT_URL" -O Hack.zip
+unzip -q Hack.zip -d "$FONT_DIR"
+fc-cache -fv
+rm Hack.zip
+
+echo "Sincronizando LazyVim com plugins..."
 nvim --headless "+Lazy sync" +qa
 
 echo "Configuração concluída!"
