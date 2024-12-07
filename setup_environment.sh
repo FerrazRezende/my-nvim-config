@@ -5,10 +5,14 @@ sudo dnf update -y
 
 sudo dnf install -y neovim git wget unzip
 
-mkdir -p ~/.config/nvim/lua/plugins
 chmod -R u+w ~/.config/nvim
 
 git clone https://github.com/LazyVim/starter ~/.config/nvim
+
+sudo dnf copr enable atim/lazygit -y
+sudo dnf install lazygit
+
+touch ~/.config/lazygit/config.yml
 
 cat <<EOF >~/.config/nvim/lua/plugins/extras.lua
 return {
